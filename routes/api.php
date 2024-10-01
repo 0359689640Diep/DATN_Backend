@@ -4,6 +4,10 @@ use App\Http\Controllers\Admin\Account\AccountController;
 use App\Http\Controllers\Admin\Banner\{
     BannerController
 };
+use App\Http\Controllers\Custommer\{
+    BannerController as CustommerBannerController,
+    RommTypeController
+};
 use App\Http\Controllers\Admin\Banner\index;
 use App\Http\Controllers\Admin\Rooms\{
     RoomsController,
@@ -35,6 +39,11 @@ Route::prefix("/authentication")->middleware(StartSession::class)->group(functio
     Route::post('/forgot-password', [AuthenticationController::class, "forgotPassword"]);
     Route::post('/forgot-password-verification', [AuthenticationController::class, "forgotPasswordVerification"]);
 });
+Route::prefix("/customers")->group(function(){
+    Route::get('/banner', [CustommerBannerController::class, "index"]);
+    Route::get('/room-type', [RommTypeController::class, "index"]);
+
+});
 
 Route::prefix('/admin')->middleware(Admin::class)->group(function(){
     Route::prefix('/rooms')->group(function() {
@@ -54,14 +63,14 @@ Route::prefix('/admin')->middleware(Admin::class)->group(function(){
         Route::get("/", [BannerController::class, "index"]);
         Route::get("/{id}", [BannerController::class, "getId"]);
         Route::post("/add", [BannerController::class, "add"]);
-        Route::post("/edit/{id}", [BannerController::class, "edit"]);
+        Route::put("/edit/{id}", [BannerController::class, "edit"]);
         Route::delete("/delete/{id}", [BannerController::class, "delete"]);
     }); 
     Route::prefix("account")->group(function(){
         Route::get("/", [AccountController::class, "index"]);
         Route::get("/{id}", [AccountController::class, "getId"]);
         Route::post("/add", [AccountController::class, "add"]);
-        Route::post("/edit/{id}", [AccountController::class, "edit"]);
+        Route::put("/edit/{id}", [AccountController::class, "edit"]);
         Route::delete("/delete/{id}", [AccountController::class, "delete"]);
     });
     Route::prefix("service")->group(function(){

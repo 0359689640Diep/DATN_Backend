@@ -30,7 +30,7 @@ class BannerController extends Controller
                 return response()->json(['message' => 'Không có dữ liệu'], 404);
             }
         // Chuyển đổi dữ liệu thành mảng với URL của ảnh
-        $data = $banners->map(function ($banner) {
+        $bannersWithUrls = $banners->map(function ($banner) {
             return [
                 'id' => $banner->id,
                 'status_id' => $banner->status_id, // Sửa tên thuộc tính
@@ -40,7 +40,7 @@ class BannerController extends Controller
             ];
         });
 
-        return response()->json(compact("data"));
+        return response()->json($bannersWithUrls);
 
     }
 
@@ -79,7 +79,7 @@ class BannerController extends Controller
                 // Save the file path to the database
                 // Add the image to the database
                 BannerImage::create([
-                    "status_id" => $input["status_id"],
+                    "stats_id" => 1,
                     "image_url" => $path
                 ]);
             }
@@ -116,9 +116,7 @@ class BannerController extends Controller
                 // Save the file path to the database
                 // Add the image to the database
                 $oldImage->update([
-                    "status_id" => $input["status_id"],
                     "image_url" => $path
-                    
                 ]);
                 return response()->json(["message" => "Cập banner thành công"]);
             }
@@ -128,7 +126,7 @@ class BannerController extends Controller
 
     public function delete($id)
     {
-        BannerImage::where('id', $id)->update(["status_id" => 2]);
+        BannerImage::where('id', $id)->update(["stats_id" => 2]);
         return response()->json(["message" => "Ẩn banner thành công"]);
     }
 }

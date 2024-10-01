@@ -16,22 +16,12 @@ class ServiceController extends Controller
         ];
     }
 
-    public function index(Request $request) {
-        $name = $request->input('name');
-        $roomTypeId = $request->input('room_type_id');
-        $query = ServiceModel::select("id", "name", "price", "description", "room_type_id", "status_id")->with(["roomType:id,type", "status:color,name,id"]);
-        if ($name) {
-            $query->where('name', 'like', "%{$name}%");
-        }
-        if ($roomTypeId) {
-            $query->where('room_type_id', '=', $roomTypeId);
-        }
-        $data = $query->get();
+    public function index() {
+        $data = ServiceModel::select("id", "name", "price", "description", "room_type_id", "status_id")->with(["roomType:id,type", "status:color,name,id"])->get();
         if ($data->isEmpty()) {
             return response()->json(['message' => 'Không có dữ liệu'], 404);
         }
-        return response()->json(compact("data"), 200);
-
+        return response()->json($data);
     }
     public function getId($id) {
         $data = ServiceModel::select("id", "name", "price", "description", "room_type_id", "status_id")->where("id", $id)->first();
