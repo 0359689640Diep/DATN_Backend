@@ -9,7 +9,7 @@ class RommsType extends Model
 {
     use HasFactory;
     protected $table = 'rooms_type';
-    protected $fillable = ["id", "type"];
+    protected $fillable = ['type', 'price_per_night', 'defaul_people', 'description'];
 
     public function roomImages(){
         return $this->hasMany(RommsImage::class, "room_type_id");

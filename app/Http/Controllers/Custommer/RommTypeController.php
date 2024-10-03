@@ -14,7 +14,7 @@ class RommTypeController extends Controller
         $price_per_night = $request->input('price_per_night');
 
 
-        $query = RommsType::select("id", "type", "price_per_night")
+        $query = RommsType::select("id", "type", "price_per_night", "description", "defaul_people")
             ->with("roomImages:description,image_url,room_type_id,id");
         
         if($type){
@@ -41,6 +41,8 @@ class RommTypeController extends Controller
             return [
                 "id" => $roomType->id,
                 "type" => $roomType->type,
+                "defaul_people" => $roomType->defaul_people,
+                "description" => $roomType->description,
                 "price_per_night" => $roomType->price_per_night,
                 "room_images" => $images // Trả về mảng các hình ảnh
             ];

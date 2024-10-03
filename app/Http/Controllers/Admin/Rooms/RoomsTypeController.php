@@ -25,14 +25,27 @@ class RoomsTypeController extends Controller
             "image_id.array" => "image_id phải là một mảng",
             "image_id.integer" => "image_id phải là một số",
             "image_id.exists" => "image_id không tồn tại trên database",
+            'price_per_night.required' => 'Giá cho một đêm không được để trống.',
+            'price_per_night.integer' => 'Giá cho một đêm phải là dạng số.',
+            'defaul_people.required' => 'Số lượng người mặc định không được để trống.',
+            'defaul_people.integer' => 'Số lượng người mặc định phải là dạng số.',
         ];
     }
 
     public function addRoomType(Request $request)
     {
         $input = $request->all();
+        $dataAddRoomType = [
+            'type' => $input['type'],
+            'price_per_night' => $input['price_per_night'],
+            'defaul_people' => $input['defaul_people'],
+            'description' => $input['description'],
+        ];
         $validator = Validator::make($input, [
             'type' => 'required',
+            "price_per_night",
+            "description",
+            "defaul_people",
             'images' => 'required',
             'images.*' => 'file|image|mimes:jpeg,jpg,png' 
         ], $this->messages);
@@ -43,7 +56,8 @@ class RoomsTypeController extends Controller
 
         if ($dataRoomType)  return response()->json(["message" => "Loại phòng đã tồn tại"], 400);
         // lưu trữ dữ liệu vào room type
-        $roomType = RommsType::create(["type" => $input["type"]]);
+        $roomType = RommsType::create($dataAddRoomType);
+        
         $id = $roomType->id;
 
         // duyệt qua từng file và lưu trữ
@@ -74,7 +88,7 @@ class RoomsTypeController extends Controller
     {
         $type = $request->input('type');
 
-        $query = RommsType::select("id", "type")
+        $query = RommsType::select("id", "type", "defaul_people", "description", "price_per_night")
             ->with("roomImages:description,image_url,room_type_id,id");
         
         if($type){
@@ -98,6 +112,9 @@ class RoomsTypeController extends Controller
             return [
                 "id" => $roomType->id,
                 "type" => $roomType->type,
+                "defaul_people" => $roomType->defaul_people,
+                "description" => $roomType->description,
+                "price_per_night" => $roomType->price_per_night,
                 "room_images" => $images // Trả về mảng các hình ảnh
             ];
         });
@@ -118,6 +135,13 @@ class RoomsTypeController extends Controller
     {
         
         $input = $request->all();
+        $dataAddRoomType = [
+            'type' => $input['type'],
+            'price_per_night' => $input['price_per_night'],
+            'defaul_people' => $input['defaul_people'],
+            'description' => $input['description'],
+        ];
+
         // Kiểm tra sự tồn tại của loại phòng với tên đã được cập nhật
         $existingRoomType = RommsType::where('type', $input['type'])->where('id', '!=', $id)->exists();
         if ($existingRoomType) {
@@ -125,8 +149,7 @@ class RoomsTypeController extends Controller
         }
 
         // Cập nhật loại phòng
-        RommsType::where('id', $id)->update(['type' => $input['type']]);
-
+        RommsType::where("id", $id)->update($dataAddRoomType);
         // Lấy danh sách các ảnh cũ từ cơ sở dữ liệu
         
         // Duyệt qua từng ảnh mới để xác định ảnh nào cần thay thế

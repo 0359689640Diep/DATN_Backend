@@ -18,10 +18,6 @@ class RoomsController extends Controller
             'status_id.required' => 'Loại phòng không được để trống.',
             'number.required' => 'Số phòng không được để trống.',
             'number.integer' => 'Số phòng phải là dạng số.',
-            'price_per_night.required' => 'Giá cho một đêm không được để trống.',
-            'price_per_night.integer' => 'Giá cho một đêm phải là dạng số.',
-            'defaul_people.required' => 'Số lượng người mặc định không được để trống.',
-            'defaul_people.integer' => 'Số lượng người mặc định phải là dạng số.',
         ];
     }
 
@@ -36,9 +32,6 @@ class RoomsController extends Controller
             "id",
             "room_type_id",
             "number",
-            "price_per_night",
-            "description",
-            "defaul_people",
             "status_id"
         )->with(["roomType:id,type", "status:color,name,id"]);
     
@@ -71,8 +64,8 @@ class RoomsController extends Controller
             "number",
             "price_per_night",
             "description",
-            "status_id",
             "defaul_people",
+            "status_id",
         )->with(["roomType:id,type", "status:color,name,id"])->where("id", $id)->get();
         if ($data->isEmpty()) {
             // Nếu dữ liệu trống, trả về 404 với thông báo lỗi
@@ -85,8 +78,6 @@ class RoomsController extends Controller
         $validator = Validator::make($request->all(), [
             'room_type_id' => 'required',
             'number' => 'required|integer',
-            'price_per_night' => 'required|integer',
-            'defaul_people' => 'required|integer',
             'status_id' => 'required',
         ], $this->messages);
         $input = $request->all();
@@ -103,8 +94,6 @@ class RoomsController extends Controller
         $validator = Validator::make($request->all(), [
             'room_type_id' => 'required',
             'number' => 'required|integer',
-            'price_per_night' => 'required|integer',
-            'defaul_people' => 'required|integer',
             'status_id' => 'required',
 
         ], $this->messages);
