@@ -29,6 +29,13 @@ class Admin
         if (!$dataToken) {
             return response()->json(['message' => 'Vui lòng đăng nhập để sử dụng dịch vụ'], 401);
         }
+        $timeNow = now(); // Thời gian hiện tại
+        $expiresAt = $dataToken->expires_at; // Thời gian hết hạn của token
+        
+        // So sánh thời gian hiện tại với thời gian hết hạn của token
+        if ($timeNow->greaterThan($expiresAt)) {
+            return response()->json(['message' => 'Phiên làm việc đã hết hạn'], 401);
+        }
     
         $user = users::select("role", "status_id")->where("id", $dataToken->user_id)->first();
     

@@ -12,7 +12,7 @@ class users extends Model
     use HasFactory;
     use HasApiTokens, Notifiable;
 
-    protected $fillable = ["name", "email", "password", "image", "role", "phone", "address", "number_CCCD", "status_id"];
+    protected $fillable = ["name", "email", "password", "image", "role", "phone", "address", "number_CCCD", "status_id", "code"];
     protected $table = "users";
     public function status(){
         return $this->belongsTo(StatusModel::class, "status_id");

@@ -17,6 +17,8 @@ class status extends Seeder
             [
                 ["name" => "Hoạt động", "type" => "1", "color" => "#28a745"],
                 ["name" => "Ngưng hoạt động", "type" => "1", "color" => "#dc3545"],
+                ["name" => "Xác thực đăng nhập", "type" => "2", "color" => "#ffc107"],
+                ["name" => "Xác thực quyên mật khẩu", "type" => "2", "color" => "#ffc107"],
             ]
         );
     }

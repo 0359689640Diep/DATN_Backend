@@ -36,6 +36,7 @@ Route::prefix("/authentication")->middleware(StartSession::class)->group(functio
     Route::post('/register', [AuthenticationController::class, "register"]);
     Route::post('/register-verification', [AuthenticationController::class, "registerVerification"]);
     Route::post('/login', [AuthenticationController::class, "login"]);
+    Route::get('/logout', [AuthenticationController::class, "logout"]);
     Route::post('/forgot-password', [AuthenticationController::class, "forgotPassword"]);
     Route::post('/forgot-password-verification', [AuthenticationController::class, "forgotPasswordVerification"]);
 });
