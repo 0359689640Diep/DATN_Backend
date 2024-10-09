@@ -40,6 +40,8 @@ class RoomsTypeController extends Controller
             'price_per_night' => $input['price_per_night'],
             'defaul_people' => $input['defaul_people'],
             'description' => $input['description'],
+            'description_detail' => $input['description_detail'],
+            'title' => $input['title'],
         ];
         $validator = Validator::make($input, [
             'type' => 'required',
@@ -88,7 +90,7 @@ class RoomsTypeController extends Controller
     {
         $type = $request->input('type');
 
-        $query = RommsType::select("id", "type", "defaul_people", "description", "price_per_night")
+        $query = RommsType::select("id", "type", "defaul_people", "description", "price_per_night", "title", "description_detail")
             ->with("roomImages:description,image_url,room_type_id,id");
         
         if($type){
@@ -114,6 +116,8 @@ class RoomsTypeController extends Controller
                 "type" => $roomType->type,
                 "defaul_people" => $roomType->defaul_people,
                 "description" => $roomType->description,
+                "title" => $roomType->title,
+                "description_detail" => $roomType->description_detail,
                 "price_per_night" => $roomType->price_per_night,
                 "room_images" => $images // Trả về mảng các hình ảnh
             ];
@@ -140,6 +144,8 @@ class RoomsTypeController extends Controller
             'price_per_night' => $input['price_per_night'],
             'defaul_people' => $input['defaul_people'],
             'description' => $input['description'],
+            'description_detail' => $input['description_detail'],
+            'title' => $input['title'],
         ];
 
         // Kiểm tra sự tồn tại của loại phòng với tên đã được cập nhật
