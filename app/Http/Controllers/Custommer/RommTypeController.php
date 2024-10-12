@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Custommer;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RoomTypeResource;
 use App\Models\RommsType;
 use Illuminate\Http\Request;
 
@@ -14,8 +15,12 @@ class RommTypeController extends Controller
         $price_per_night = $request->input('price_per_night');
 
 
-        $query = RommsType::select("id", "type", "price_per_night", "description", "defaul_people")
-            ->with("roomImages:description,image_url,room_type_id,id");
+        $query = RommsType::select("id", "type", "price_per_night", "description", "defaul_people", "description_detail", "title")
+        ->with([
+            "roomImages:description,image_url,room_type_id,id",
+            "reviews:id,rating,comment,room_type_id,user_id",
+            "reviews.user:id,name,email,image" 
+        ]);
         
         if($type){
             $query = $query->where("id", $type);
@@ -28,26 +33,22 @@ class RommTypeController extends Controller
             return response()->json(['message' => 'Không có dữ liệu'], 404);
         }
         
-        $data = $dataRoomType->map(function ($roomType) {
-            // Lấy tất cả các hình ảnh liên quan đến phòng từ roomImages
-            $images = $roomType->roomImages->map(function ($image) {
-                return [
-                    "id" => $image->id,
-                    "description" => $image->description ?? "", 
-                    "image_url" => $image->image_url ? asset('storage/' . $image->image_url) : "",
-                ];
-            });
+        return response()->json(["data" => RoomTypeResource::collection($dataRoomType)], 200);
+    }
+    public function getById($id)
+    {
+
+        $query = RommsType::select("id", "type", "price_per_night", "description", "defaul_people", "description_detail", "title")
+        ->with([
+            "roomImages:description,image_url,room_type_id,id",
+            "reviews:id,rating,comment,room_type_id,user_id",
+            "reviews.user:id,name,email,image" 
+        ]);
     
-            return [
-                "id" => $roomType->id,
-                "type" => $roomType->type,
-                "defaul_people" => $roomType->defaul_people,
-                "description" => $roomType->description,
-                "price_per_night" => $roomType->price_per_night,
-                "room_images" => $images // Trả về mảng các hình ảnh
-            ];
-        });
-    
-        return response()->json(["data" => $data], 200);
+        
+        $query = $query->where("id", $id);
+        $dataRoomType = $query->first();
+
+        return response()->json(["data" => new RoomTypeResource($dataRoomType)], 200);
     }
 }

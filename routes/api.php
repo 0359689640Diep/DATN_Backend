@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Banner\{
 };
 use App\Http\Controllers\Custommer\{
     BannerController as CustommerBannerController,
+    ReviewsController,
     RommTypeController
 };
 use App\Http\Controllers\Admin\Banner\index;
@@ -43,6 +44,10 @@ Route::prefix("/authentication")->middleware(StartSession::class)->group(functio
 Route::prefix("/customers")->group(function(){
     Route::get('/banner', [CustommerBannerController::class, "index"]);
     Route::get('/room-type', [RommTypeController::class, "index"]);
+    Route::get('/room-type/{id}', [RommTypeController::class, "getById"]);
+    Route::get('/reviews/{id}', [ReviewsController::class, "getByIdRoomType"]);
+    Route::get('/reviews/average-rating/{id}', [ReviewsController::class, "getAverageRating"]);
+
 
 });
 
