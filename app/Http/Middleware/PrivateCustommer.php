@@ -6,10 +6,9 @@ use App\Models\token;
 use App\Models\users;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class   Admin
+class PrivateCustommer
 {
     /**
      * Handle an incoming request.
@@ -23,12 +22,13 @@ class   Admin
         if (!$token) {
             return response()->json(['message' => 'Vui lòng đăng nhập để sử dụng dịch vụ'], 401);
         }
-    
+
         $dataToken = token::where("value", $token)->first();
     
         if (!$dataToken) {
             return response()->json(['message' => 'Vui lòng đăng nhập để sử dụng dịch vụ'], 401);
         }
+
         $timeNow = now(); // Thời gian hiện tại
         $expiresAt = $dataToken->expires_at; // Thời gian hết hạn của token
         
@@ -38,8 +38,7 @@ class   Admin
         // }
     
         $user = users::select("role", "status_id")->where("id", $dataToken->user_id)->first();
-    
-        if (!$user || $user->role === 1) {
+        if (!$user || $user->role != 4) {
             return response()->json(['message' => 'Bạn không có quyền sử dụng dịch vụ này'], 403);
         }
         if($user->status_id == 2){
@@ -47,8 +46,7 @@ class   Admin
                 "message" => "Tài khoản đã bị vô hiệu hóa.",
             ], 401);
         }
-    
+
         return $next($request);
     }
-    
 }
