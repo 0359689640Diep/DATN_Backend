@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Custommer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Custommer\PaymentController;
+use App\Http\Resources\BookingDetailResource;
 use App\Http\Resources\BookingResource;
 use App\Models\BookingModel;
 use App\Models\PaymentsModel;
@@ -25,8 +26,8 @@ class BookingController extends Controller
 
     public function __construct(PaymentController $vnpayPayment)
     {
-        $this->vnpayPayment = $vnpayPayment;
         $this->dateNow = date('Y-m-d H:i:s');
+        $this->vnpayPayment = $vnpayPayment;
         $this->messages = [
             'name.required' => 'Tên không được để trống.',
             'email.required' => 'Email không được để trống.',
@@ -205,6 +206,25 @@ class BookingController extends Controller
             ->with(["roomType:id,type", "status:name,color,id", "room:id,number", ])
             ->get();
             return response()->json(['data' => BookingResource::collection($data)]);
+    }
+
+    public function getDetailBookings($id)
+    {
+        $data = BookingModel::where("id", "=", $id)
+            ->select("id", "room_id", "room_type_id", "status_id", "person_in_charge", "total_price", "created_at", "deposit_amount","surcharge")
+            ->with([
+                "roomType:id,type,price_per_night", 
+                "status:name,color,id", 
+                "room:id,number", 
+                "payments:id,booking_id,status_id,code,payment_date,amount,payment_method",
+                "payments.status:id,name,color",
+                "serviceBooking:id,booking_id,status_id,service_id,quanlity_service,total_price,created_at",
+                "serviceBooking.service:id,name",
+                "serviceBooking.status:id,name,color",
+                ])
+            ->first();
+
+            return response()->json(['data' => new BookingDetailResource($data)]);
     }
 
     public function confirmBookings(Request $request, $id)

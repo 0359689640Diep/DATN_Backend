@@ -15,7 +15,10 @@ class RoomTypeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $data = parent::toArray($request);
-    
+
+        // Format price_per_night
+        $data['price_per_night'] = number_format($this->price_per_night, 0, ',', '.'); // Format giá với dấu chấm ngăn cách hàng nghìn
+
         // Format room_images
         if (!empty($this->roomImages)) {
             $data['room_images'] = $this->roomImages->map(function ($image) {
@@ -27,16 +30,16 @@ class RoomTypeResource extends JsonResource
                 ];
             });
         }
-    
+
         $totalScore = 0;
         $quantityReviews = 0;
         if (!empty($this->reviews)) {
-    
+
             // Lấy thông tin reviews và user
             $data['reviews'] = $this->reviews->map(function ($review) use (&$totalScore, &$quantityReviews) {
                 $totalScore += $review->rating;
                 $quantityReviews++;
-    
+
                 // Lấy thông tin người dùng từ quan hệ user
                 $user = $review->user;
                 return [
@@ -51,12 +54,11 @@ class RoomTypeResource extends JsonResource
                 ];
             });
         }
-    
+
         // Tính lượt đánh giá trung bình của từng loại phòng
         $averageRating = $quantityReviews > 0 ? round($totalScore / $quantityReviews, 1) : 0;
         $data['average_rating'] = $averageRating;
-    
+
         return $data;
     }
-    
 }

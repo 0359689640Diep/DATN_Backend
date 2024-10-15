@@ -16,4 +16,11 @@ class ServiceBookingModel extends Model
         "quanlity_service",
         "total_price",
     ];
+
+    public function service(){
+        return $this->belongsTo(ServiceModel::class, "service_id");
+    }
+    public function status(){
+        return $this->belongsTo(StatusModel::class, "status_id");
+    }
 }

@@ -10,4 +10,8 @@ class PaymentsModel extends Model
     use HasFactory;
     protected $fillable = ["id", "booking_id", "status_id", "amount", "payment_date", "payment_method", "code", "payment_gateway_response"];
     protected $table = "payments";
+
+    public function status(){
+        return $this->belongsTo(StatusModel::class, "status_id");
+    }
 }

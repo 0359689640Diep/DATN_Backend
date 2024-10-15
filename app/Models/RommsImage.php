@@ -12,5 +12,5 @@ class RommsImage extends Model
     protected $fillable = ["id", "room_type_id", "image_url", "description"];
     public function roomType(){
         return $this->belongsTo(RommsType::class, "room_type_id");
-    }
+    }   
 }

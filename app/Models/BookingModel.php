@@ -13,6 +13,9 @@ class BookingModel extends Model
     public function payments(){
         return $this->hasMany(PaymentsModel::class, "booking_id");
     }
+    public function serviceBooking(){
+        return $this->hasMany(ServiceBookingModel::class, "booking_id");
+    }
     public function roomType(){
         return $this->belongsTo(RommsType::class, "room_type_id");
     }
