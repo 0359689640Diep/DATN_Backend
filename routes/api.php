@@ -58,6 +58,7 @@ Route::prefix("/customers")->group(function () {
         Route::get("/get-bookings", [BookingController::class, "getBookings"]);
         Route::get("/get-bookings/{id}", [BookingController::class, "getDetailBookings"]);
         Route::get("/get-customer", [UsersController::class, "getUsers"]);
+        Route::post("/update-customer", [UsersController::class, "updateUsers"]);
         Route::get("/get-service/{id}", [CustommerServiceController::class, "getServiceByIdRoomType"]);
         Route::get('/reviews/bookings/{id}', [ReviewsController::class, "getByIdBooking"]);
         Route::post('/reviews/bookings', [ReviewsController::class, "postReviews"]);
