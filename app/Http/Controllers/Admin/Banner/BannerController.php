@@ -30,7 +30,7 @@ class BannerController extends Controller
                 return response()->json(['message' => 'Không có dữ liệu'], 404);
             }
         // Chuyển đổi dữ liệu thành mảng với URL của ảnh
-        $bannersWithUrls = $banners->map(function ($banner) {
+        $data = $banners->map(function ($banner) {
             return [
                 'id' => $banner->id,
                 'status_id' => $banner->status_id, // Sửa tên thuộc tính
@@ -40,7 +40,7 @@ class BannerController extends Controller
             ];
         });
 
-        return response()->json($bannersWithUrls);
+        return response()->json(compact("data"));
 
     }
 
@@ -58,11 +58,12 @@ class BannerController extends Controller
     public function add(Request $request)
     {
         $input = $request->all();
+        $statusId = request("status_id");
         $validator = Validator::make($input, [
             'images.*' => 'image|mimes:jpeg,jpg,png'
         ], $this->messages);
         // kiem tra validate
-        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 400);
+        if ($validator->fails()) return response()->json($validator->errors(), 422);
 
         // duyệt qua từng file và lưu trữ
         if ($request->hasFile('images')) {
@@ -79,7 +80,7 @@ class BannerController extends Controller
                 // Save the file path to the database
                 // Add the image to the database
                 BannerImage::create([
-                    "stats_id" => 1,
+                    "status_id" => $statusId,
                     "image_url" => $path
                 ]);
             }
@@ -90,14 +91,10 @@ class BannerController extends Controller
 
     public function edit(Request $request, $id)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'images' => 'image|mimes:jpeg,jpg,png',
-        ], $this->messages);
-        // kiem tra validate
-        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 400);
-
+        $statusId = request("status_id");
         // duyệt qua từng file và lưu trữ
+        $oldImage = BannerImage::where('id', $id)->first();
+        $path = $oldImage->image_url;
         if ($request->hasFile('images')) {
             $files = $request->file('images');
             // Validate each file
@@ -105,23 +102,19 @@ class BannerController extends Controller
                 return response()->json(["message" => "File không hợp lệ vui lòng thử lại"], 400);
             }
 
-            $oldImage = BannerImage::where('id', $id)->first();
             if (!empty($oldImage)) {
                 if (Storage::disk('public')->exists($oldImage->image_url)) {
                     Storage::disk("public")->delete($oldImage->image_url);
                 }
                 // Store the file with a unique name
                 $path = $files->store('uploads', 'public');
-
-                // Save the file path to the database
-                // Add the image to the database
-                $oldImage->update([
-                    "image_url" => $path
-                ]);
-                return response()->json(["message" => "Cập banner thành công"]);
             }
-            return response()->json(["errors" => "Không tìm thấy ảnh"], 404);
         }
+        $oldImage->update([
+            "image_url" => $path,
+            "status_id" => $statusId,
+        ]);
+        return response()->json(["message" => "Cập banner thành công"]);
     }
 
     public function delete($id)

@@ -83,14 +83,14 @@ Route::prefix('/admin')->middleware(Admin::class)->group(function () {
         Route::get("/", [BannerController::class, "index"]);
         Route::get("/{id}", [BannerController::class, "getId"]);
         Route::post("/add", [BannerController::class, "add"]);
-        Route::put("/edit/{id}", [BannerController::class, "edit"]);
+        Route::post("/edit/{id}", [BannerController::class, "edit"]);
         Route::delete("/delete/{id}", [BannerController::class, "delete"]);
     });
     Route::prefix("account")->group(function () {
         Route::get("/", [AccountController::class, "index"]);
         Route::get("/{id}", [AccountController::class, "getId"]);
         Route::post("/add", [AccountController::class, "add"]);
-        Route::put("/edit/{id}", [AccountController::class, "edit"]);
+        Route::post("/edit/{id}", [AccountController::class, "edit"]);
         Route::delete("/delete/{id}", [AccountController::class, "delete"]);
     });
     Route::prefix("service")->group(function () {

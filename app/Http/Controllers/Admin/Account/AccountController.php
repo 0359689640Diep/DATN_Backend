@@ -16,7 +16,7 @@ class AccountController extends Controller
     {
         $this->messages = [
             'name.required' => 'Tên không được để trống.',
-            'role.required' => 'Tên không được để trống.',
+            'role.required' => 'Quyền không được để trống.',
             'email.required' => 'Email không được để trống.',
             'email.email' => 'Email không hợp lệ.',
             'password.required' => 'Mật khẩu không được để trống.',
@@ -25,12 +25,17 @@ class AccountController extends Controller
         ];
     }
 
-    public function index(){
-        $data = users::select("id", "name", "email", "image", "role", "status_id")->with("status:name,color,id")->get();
+    public function index(Request $request){
+        $query = users::select("id", "name", "email", "image", "role", "status_id")->with("status:name,color,id");
+        $email = $request->input("email");
+        if($email){
+            $query->where('email', $email);
+        }
+        $data = $query->get();
         if ($data->isEmpty()) {
             return response()->json(['message' => 'Không có dữ liệu'], 404);
         }
-        $formatData = $data->map(function ($item) {
+        $data = $data->map(function ($item) {
             return [
                 "id" => $item->id,
                 "name" => $item->name,
@@ -42,7 +47,7 @@ class AccountController extends Controller
                 "status_color" => $item->status->color,
             ];
         });
-        return response()->json($formatData);
+        return response()->json(compact("data"));
     }
     public function getId($id){
         $data = users::select("name", "email", "image", "role", "status_id")->where("id", $id)->first();
@@ -68,6 +73,8 @@ class AccountController extends Controller
         $name = request("name");
         $email = request("email");
         $role = request("role");
+        $statusId = request("status_id");
+
         $image = "";
         $dataUsers = users::where("email", $email)->first();
         if ($dataUsers) {
@@ -92,7 +99,8 @@ class AccountController extends Controller
             "email" => $email,
             "password" => bcrypt($password),
             "image" => $image,
-            "role" => $role
+            "role" => $role,
+            "status_id" => $statusId
         ]);
         return response()->json([
             "message" => "Thêm tài khoản thành công.",
@@ -103,7 +111,7 @@ class AccountController extends Controller
         $validator = Validator::make($request->all(), [
             "name" => "required|string|max:255",
             "email" => "required|string|email",
-            "password" => "required|string|min:8",
+            "password" => "nullable|string|min:8",
             "role" => "required",
             'image' => 'image|mimes:jpeg,jpg,png'
         ], $this->messages);
@@ -115,6 +123,8 @@ class AccountController extends Controller
         $email = request("email");
         $role = request("role");
         $image = "";
+        $statusId = request("status_id");
+
         $dataUsers = users::where("email", $email)->where("id", "!=", $id)->first();
         $dataUsersOld = users::where("id", "=", $id)->first();
         if ($dataUsers) {
@@ -136,15 +146,23 @@ class AccountController extends Controller
 
             // Store the file with a unique name
             $image = $files->store('uploads', 'public');
+        }else{
+            $image = $dataUsersOld->image;
         }
 
-        users::where("id", $id)->update([
+        $dataUpdate =[
             "name" => $name,
             "email" => $email,
-            "password" => bcrypt($password),
             "image" => $image,
-            "role" => $role
-        ]);
+            "role" => $role,
+            "status_id" => $statusId
+        ];
+
+        if(!empty($password)){
+            $dataUpdate["password"] =  bcrypt($password);
+        }
+
+        users::where("id", $id)->update($dataUpdate);
         return response()->json([
             "message" => "Cập nhật tài khoản thành công.",
         ], 200);
