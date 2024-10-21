@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Rooms;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RoomModel;
@@ -60,12 +60,10 @@ class RoomsController extends Controller
     public function getById($id)
     {
         $data = RoomModel::select(
+            "id",
             "room_type_id",
             "number",
-            "price_per_night",
-            "description",
-            "defaul_people",
-            "status_id",
+            "status_id"
         )->with(["roomType:id,type", "status:color,name,id"])->where("id", $id)->get();
         if ($data->isEmpty()) {
             // Nếu dữ liệu trống, trả về 404 với thông báo lỗi

@@ -1,24 +1,23 @@
 <?php
 
-use App\Http\Controllers\Admin\Account\AccountController;
-use App\Http\Controllers\Admin\Banner\{
-    BannerController
-};
 use App\Http\Controllers\Custommer\{
     BannerController as CustommerBannerController,
     BookingController,
     ReviewsController,
     RommTypeController,
-    ServiceController as CustommerServiceController
+    ServiceController as CustommerServiceController,
+    UsersController
 };
 use App\Http\Controllers\Admin\Banner\index;
-use App\Http\Controllers\Admin\Rooms\{
+use App\Http\Controllers\Admin\{
     RoomsController,
-    RoomsTypeController
+    RoomsTypeController,
+    ServiceController,
+    BannerController,
+    AccountController,
+    BookingController as AdminBookingController
 };
-use App\Http\Controllers\Admin\Service\ServiceController;
 use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\Custommer\UsersController;
 use App\Http\Controllers\StatusController;
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\PrivateCustommer;
@@ -99,6 +98,13 @@ Route::prefix('/admin')->middleware(Admin::class)->group(function () {
         Route::post("/add", [ServiceController::class, "add"]);
         Route::put("/edit/{id}", [ServiceController::class, "edit"]);
         Route::delete("/delete/{id}", [ServiceController::class, "delete"]);
+    });
+    Route::prefix("bookings")->group(function(){
+        Route::get("/", [AdminBookingController::class, "index"]);
+        Route::get("/{id}", [AdminBookingController::class, "getById"]);
+        Route::post("/add", [AdminBookingController::class, "add"]);
+        Route::put("/check-in-bookings/{id}", [AdminBookingController::class, "checkInBookings"]);
+        Route::delete("/delete/{id}", [AdminBookingController::class, "delete"]);
     });
 });
 
