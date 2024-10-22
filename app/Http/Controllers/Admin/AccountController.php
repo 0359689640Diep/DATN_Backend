@@ -28,8 +28,12 @@ class AccountController extends Controller
     public function index(Request $request){
         $query = users::select("id", "name", "email", "image", "role", "status_id")->with("status:name,color,id");
         $email = $request->input("email");
+        $statusId = $request->input("status_id");
         if($email){
             $query->where('email', $email);
+        }
+        if($statusId){
+            $query->where('status_id', $statusId);
         }
         $data = $query->get();
         if ($data->isEmpty()) {

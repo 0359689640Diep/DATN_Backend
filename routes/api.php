@@ -15,7 +15,8 @@ use App\Http\Controllers\Admin\{
     ServiceController,
     BannerController,
     AccountController,
-    BookingController as AdminBookingController
+    BookingController as AdminBookingController,
+    ServiceUsers
 };
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\StatusController;
@@ -98,6 +99,14 @@ Route::prefix('/admin')->middleware(Admin::class)->group(function () {
         Route::post("/add", [ServiceController::class, "add"]);
         Route::put("/edit/{id}", [ServiceController::class, "edit"]);
         Route::delete("/delete/{id}", [ServiceController::class, "delete"]);
+    });
+    Route::prefix("service-users")->group(function () {
+        Route::get("/", [ServiceUsers::class, "index"]);
+        Route::get("/{id}", [ServiceUsers::class, "getId"]);
+        Route::get("/service/{id}", [ServiceUsers::class, "getIdService"]);
+        Route::post("/add", [ServiceUsers::class, "add"]);
+        Route::put("/edit/{id}", [ServiceUsers::class, "edit"]);
+        Route::delete("/delete/{id}", [ServiceUsers::class, "delete"]);
     });
     Route::prefix("bookings")->group(function(){
         Route::get("/", [AdminBookingController::class, "index"]);
