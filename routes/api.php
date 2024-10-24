@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{
     BannerController,
     AccountController,
     BookingController as AdminBookingController,
+    BookingServiceUserController,
     ServiceUsers
 };
 use App\Http\Controllers\AuthenticationController;
@@ -108,12 +109,19 @@ Route::prefix('/admin')->middleware(Admin::class)->group(function () {
         Route::put("/edit/{id}", [ServiceUsers::class, "edit"]);
         Route::delete("/delete/{id}", [ServiceUsers::class, "delete"]);
     });
-    Route::prefix("bookings")->group(function(){
+    Route::prefix("bookings")->group(function () {
         Route::get("/", [AdminBookingController::class, "index"]);
         Route::get("/{id}", [AdminBookingController::class, "getById"]);
         Route::post("/add", [AdminBookingController::class, "add"]);
         Route::put("/check-in-bookings/{id}", [AdminBookingController::class, "checkInBookings"]);
         Route::delete("/delete/{id}", [AdminBookingController::class, "delete"]);
+    });
+    Route::prefix("booking-service-users")->group(function () {
+        Route::get("/", [BookingServiceUserController::class, "index"]);
+        Route::get("/{id}", [BookingServiceUserController::class, "getById"]);
+        Route::post("/add", [BookingServiceUserController::class, "addUsersToBookingsService"]);
+        Route::put("/check-in-bookings/{id}", [BookingServiceUserController::class, "checkInBookings"]);
+        Route::delete("/delete/{id}", [BookingServiceUserController::class, "delete"]);
     });
 });
 

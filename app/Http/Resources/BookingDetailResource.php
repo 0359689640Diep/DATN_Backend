@@ -42,6 +42,7 @@ class BookingDetailResource extends JsonResource
             // Xử lý nhiều service_booking
             'service_booking' => $this->serviceBooking->map(function($serviceBooking) {
                 return [
+                    'id' => $serviceBooking->id,
                     'created_at' => Carbon::parse($serviceBooking->created_at)->format('d-m-Y'),
                     'quanlity_service' => $serviceBooking->quanlity_service,
                     'total_price' => number_format($serviceBooking->total_price),
